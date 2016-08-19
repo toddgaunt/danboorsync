@@ -75,7 +75,6 @@ def main():
         for number in page_numbers:
             # Append which page to be downloaded as a query on the url
             page_url = danbooru.appendqueries(url, ["page={}".format(number)])
-            print(page_url)
             json = danbooru.jsonize(page_url)
             for post in json:
                 # If the post is missing info, skip it
