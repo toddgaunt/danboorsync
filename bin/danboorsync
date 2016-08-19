@@ -71,30 +71,25 @@ def main():
 
     # Now download all pages specified
     with util.cd(output):
+        md5sums = util.get_file_md5sums()
         for number in page_numbers:
             # Append which page to be downloaded as a query on the url
             page_url = danbooru.appendqueries(url, ["page={}".format(number)])
             print(page_url)
-
-            page_dir = "page{}".format(number)
-            if not os.path.exists(page_dir):
-                util.make_dir(page_dir)
-            # Get md5sums then encode them
-            with util.cd(page_dir):
-                md5sums = util.get_file_md5sums()
-
-                json = danbooru.jsonize(page_url)
-                for post in json:
-                    # If the post is missing info, skip it
-                    if not danbooru.verify_picture(post):
-                        continue
-                    if not post["md5"] in md5sums:
-                        filename = danbooru.download_post(post)
-                        logger.output(1, "{} downloaded in {}".format(\
-                                filename, page_dir))
-                    else:
-                        logger.warning(1, "md5sum match \"{}\" -> \"{}\"".format( \
-                                md5sums[post["md5"]], post["md5"]))
+            json = danbooru.jsonize(page_url)
+            for post in json:
+                # If the post is missing info, skip it
+                if not danbooru.verify_picture(post):
+                    continue
+                if not post["md5"] in md5sums:
+                    filename = danbooru.download_post(post)
+                    logger.output(1, "{} downloaded".format(\
+                            filename))
+                    # Add the new file to the 
+                    md5sums[post['md5']] = filename
+                else:
+                    logger.warning(1, "md5sum match \"{}\" -> \"{}\"".format( \
+                            md5sums[post["md5"]], post["md5"]))
 
 def string_range_parse(numbers):
     """Takes a list strings representitave of number ranges, 
