@@ -1,9 +1,6 @@
 #
 # License: MIT (doc/LICENSE)
 # Author: Todd Gaunt
-#
-# File: imgfetch/util.py
-# This file contains various utility functions
 
 import re
 import os
