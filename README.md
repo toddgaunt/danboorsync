@@ -1,46 +1,39 @@
-imgfetch
+Danboorsync
 ========
 
-### A file downloader for 4chan and Danbooru
+### A file downloader for Danbooru
 
-imgfetch is a simple image downloader for 4chan and Danbooru written in python3. It only uses standard python3 modules and has multiple commandline arguments. The script utitlizes APIs of various sites so extending it's cabapilities to work with imageboards that use these APIs is very easy. Imgfetch also fully supports md5 has checking on downloaded images so a thread can be downloaded every few minutes to download the latest images without having to download/create duplicate files.
+Danboorsync lets you syncronize a directory of pictures according to a tag search on danbooru
 
 #### SUPPORTED SITES
 
-Danbooru -> https://danbooru.donmai.us/ (possibly others but untested)
-
-4chan -> https://www.4chan.org/
+Danbooru -> https://danbooru.donmai.us/
 
 #### USAGE
 
 run by entering:
 ```python
-python imgfetch [ options ] URL [URL ...]
+python3 danboorsync [ options ] URL [URL ...]
 ```
 
 #### OPTIONS
 
 Options | explanation
 --------|------------
--h | Displays a help message
--d DIR | Takes an argument 'dir' that refers to the directory imgfetch will download to
--q | Quiets imgfetch's output
--v | Prints images downloaded and md5sums (if available) to terminal
--m METHOD | Uses METHOD to determine how it should check incoming files against files on disk ("md5", "name"). md5sum checking is deafult behavior, while name is fallback.
-URL ... | Takes any number of urls and processes them all one at a time
-
+-p range | Specify a page range to download from, e.g. "danboorsync -p 1-5,10,15-20"
+-h | Show a help message and exit
+-o dir | Specify a directory to download to. Default is current directory.
+-q | Turns off all output
+-v | Display files downloaded
+URL | Url to download from
 #### INSTALLATION
 run by entering:
 ```python
-git clone https://www.github.com/toddgaunt/imgfetch
-cd imgfetch
+git clone https://www.github.com/toddgaunt/danboorsync
+cd danboorsync
 ./setup.py build
-./setup.py install
+sudo ./setup.py install
 ```
-
-then copy the script bin/imgfetch to somewhere in your PATH, and invoke it with your shell
-
-
 
 #### LICENSE
 The MIT License (MIT)

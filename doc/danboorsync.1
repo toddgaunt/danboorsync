@@ -1,35 +1,35 @@
-.TH imgfetch 1 "2016-04-19" "version 1.3"
+.TH danboorsync 1 "2016-08-20" "version 1.0"
 .SH NAME
-imgfetch - file fetching utility for danbooru.domnai.us and 4chan.org
+danboorsync - file fetching utility for danbooru.domnai.us
 
 .SH SYNOPSIS
-.B imgfetch [ options ] URL [URL ...]
+.B danboorsync [ options ] URL [URL ...]
 
 .SH DESCRIPTION
-Imgfetch is a simple file downloading for 4chan and Danbooru written in python3. It utilizes APIs of various sites so extending it's cabapilities to work with imageboards that use these APIs is very easy. Imgfetch also fully supports md5 has checking on downloaded images so a thread can be downloaded every few minutes to download the latest images without having to download/create duplicate files.
+Synchronize a directory with a danbooru image tag search
 
 .SH OPTIONS
 .BR \-h "," \-\-help
 Show a help message and exit
 .PP
-.BR \-d "," \-\-directory =\fIDIR\fR
-Specify a download directory. Default is to make a directory in the current directory, then download there
+.BR \-o "," \-\-output =\fIdir\fR
+Specify a directory to download to. Default is current directory.
 .PP
-.BR \-m "," \-\-method =\fIMETHOD\fR
-Compares local files with downloaded file to avoid file duplication/duplicate downloading. \fIMETHOD\fR can be "md5", or "name". Default is "md5", but will fall back to name checks for website that don't supply md5sums for their files.
+.BR \-p "," \-\-pages =\fIrange\fR
+Specify a page range to download from, e.g. "danboorsync -p 1-5,10,15-20"
 .PP
 .BR \-q "," \-\-quiet
-Turns off output (excluding stderr)
+Turns off all output
 .PP
 .BR \-v "," \-\-verbose
-Turns on more verbose output with levels
+Display files downloaded
 .PP
 
 .SH BUGS
-Please report bugs by emailing Todd Gaunt at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/imgfetch if you're feeling a little patronage ;).
+Please report bugs by emailing Todd Gaunt at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/danboorsync if you've got nothing better to do.
 
 .SH AUTHOR
-This man page and imgfetch itself were originally authored by Todd Gaunt.
+This man page and danboorsync itself were originally authored by Todd Gaunt.
 
 .SH LICENSE
 The MIT License (MIT)
