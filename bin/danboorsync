@@ -30,7 +30,7 @@ def main():
                         action="store_true", default=False,
                         help='Turn off all output')
 
-    parser.add_argument('-v', '--create', 
+    parser.add_argument('-v', '--verbose', 
                         action="count", default=1,
                         help='Display files downloaded')
 
@@ -39,6 +39,7 @@ def main():
                     help='Url to download from')
 
     args = vars(parser.parse_args())
+
 
     # Makes things verbose
     verbosity = args["verbose"]
@@ -51,12 +52,14 @@ def main():
     if urlparse(url).netloc != danbooru.NETLOC:
         logger.error(verbosity, "Invalid url, doesn't match danbooru netloc")
 
-
     output = args["output"]
     if not output:
         output = "."
     if not os.path.exists(output):
+        logger.output(verbosity, "Creating new directory: {}".format(output))
         util.make_dir(output)
+    else:
+        logger.output(verbosity, "Using existing directory: {}".format(output))
 
     # Turn the string of numbers into a usable list
     page_numbers = string_range_parse(args["pages"].split(','))
@@ -79,7 +82,7 @@ def main():
                     # Add the new file to the 
                     md5sums[post['md5']] = filename
                 else:
-                    logger.warning(verbosity, "md5sum match \"{}\" -> \"{}\"".format( \
+                    logger.output(verbosity, "md5sum match \"{}\" -> \"{}\"".format( \
                             md5sums[post["md5"]], post["md5"]))
 
 def string_range_parse(numbers):
