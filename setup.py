@@ -17,6 +17,6 @@ setup(
     data_files = [('usr/share/man/man1', ['doc/danboorsync.1']),
                   ('usr/share/licenses/imgfetch/LICENSE', ['doc/LICENSE'])],
 
-    scripts = ['bin/danboorsync'],
+    scripts = ['/usr/bin/danboorsync'],
     name = 'danboorsync'
 )
