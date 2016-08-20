@@ -11,7 +11,7 @@ Danbooru -> https://danbooru.donmai.us/
 
 #### USAGE
 
-run by entering:
+Run by entering:
 ```python
 python3 danboorsync [ options ] URL [URL ...]
 ```
@@ -20,14 +20,15 @@ python3 danboorsync [ options ] URL [URL ...]
 
 Options | explanation
 --------|------------
--p range | Specify a page range to download from, e.g. "danboorsync -p 1-5,10,15-20"
 -h | Show a help message and exit
 -o dir | Specify a directory to download to. Default is current directory.
+-p range | Specify a page range to download from, e.g. "danboorsync -p 1-5,10,15-20"
 -q | Turns off all output
 -v | Display files downloaded
 URL | Url to download from
 #### INSTALLATION
-run by entering:
+
+Enter the following commands:
 ```python
 git clone https://www.github.com/toddgaunt/danboorsync
 cd danboorsync
