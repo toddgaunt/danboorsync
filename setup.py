@@ -14,8 +14,8 @@ setup(
     package_dir =  {'danboorsync':'src'},
 
     # Change these per distribution
-    data_files = [('usr/share/man/man1', ['doc/danboorsync.1']),
-                  ('usr/share/licenses/imgfetch/LICENSE', ['doc/LICENSE'])],
+    data_files = [('/usr/share/man/man1', ['doc/danboorsync.1']),
+                  ('/usr/share/licenses/danboorsync/LICENSE', ['doc/LICENSE'])],
 
     scripts = ['/usr/bin/danboorsync'],
     name = 'danboorsync'
