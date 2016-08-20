@@ -17,26 +17,26 @@ from danboorsync import util
 def main():
     parser = argparse.ArgumentParser(description='Downloads images en masse from Danbooru')
 
-    parser.add_argument('-p', '--pages', metavar='count',
+    parser.add_argument('-o', '--output', metavar='dir',
+                        type=str,
+                        help='Specify a directory to create the download directory')
+
+    parser.add_argument('-p', '--pages', metavar='range',
                         type=str, default="1",
-                        help='List all page range to download from, \
-                                e.g. -p "1-5, 10, 15-20"')
+                        help='Specify a page range to download from, \
+                                e.g. danboorsync -p 1-5,10,15-20')
 
     parser.add_argument('-q', '--quiet', 
                         action="store_true", default=False,
-                        help='Turns off output')
+                        help='Turn off all output')
 
-    parser.add_argument('-v', '--verbose', 
+    parser.add_argument('-v', '--create', 
                         action="count", default=1,
-                        help='Turns on more verbose output with levels')
+                        help='Display files downloaded')
 
     parser.add_argument('url', metavar='url', 
                     type=str,
-                    help='The url to download from')
-
-    parser.add_argument('-o', '--output', metavar='output',
-                        type=str,
-                        help='The output directory')
+                    help='Url to download from')
 
     args = vars(parser.parse_args())
 
@@ -49,20 +49,12 @@ def main():
     # and make sure it's legit
     url = args["url"]
     if urlparse(url).netloc != danbooru.NETLOC:
-        logger.error(1, "Invalid url, doesn't match danbooru netloc")
+        logger.error(verbosity, "Invalid url, doesn't match danbooru netloc")
 
 
     output = args["output"]
     if not output:
-        pu = urlparse(url)
-        queries = parse_qs(pu.query)
-        if queries == {}:
-            output = util.remove_chars(urlparse(url).path)
-        elif "tags" in queries.keys():
-            output = "_".join(queries["tags"])[0:200]
-        else:
-            output = "danboorsync"
-
+        output = "."
     if not os.path.exists(output):
         util.make_dir(output)
 
@@ -82,12 +74,12 @@ def main():
                     continue
                 if not post["md5"] in md5sums:
                     filename = danbooru.download_post(post)
-                    logger.output(1, "{} downloaded".format(\
+                    logger.output(verbosity, "{} downloaded".format(\
                             filename))
                     # Add the new file to the 
                     md5sums[post['md5']] = filename
                 else:
-                    logger.warning(1, "md5sum match \"{}\" -> \"{}\"".format( \
+                    logger.warning(verbosity, "md5sum match \"{}\" -> \"{}\"".format( \
                             md5sums[post["md5"]], post["md5"]))
 
 def string_range_parse(numbers):
@@ -104,7 +96,7 @@ def string_range_parse(numbers):
         elif singlematch:
             pages.append(int(singlematch.group(1)))
         else:
-            logger.warning(1, "Invalid number range {}".format(i))
+            logger.warning(verbosity, "Invalid number range {}".format(i))
     return pages
 
 if __name__ == "__main__":
