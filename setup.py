@@ -7,7 +7,7 @@ setup(
     url = 'https://www.github.com/toddgaunt/danboorsync',
     download_url = 'https://www.github.com/toddgaunt/danboorsync',
     author_email = 'toddgaunt@protonmail.ch',
-    version = '1.0',
+    version = '1.1',
 
     packages = ['danboorsync'],
 
