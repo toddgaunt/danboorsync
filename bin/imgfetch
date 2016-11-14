@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+# License: MIT (doc/LICENSE)
+# Author: Todd Gaunt
+# Contributors: Todd Gaunt, Ethan Larkham
+# Last updated: 2016-05-02
+# Version: 1.3
+#
+# This program uses a website's API to fetch all files from a thread and
+# place them in an organized way into a folder.
+# This script won't overwrite any files/redownload files
+# because it uses md5 hashing to check files. Because of this
+# it will overwrite corrupted/unfinished files in case the program
+# was terminated early.
+#
+# File: imgfetch/imgfetch
+# This is the main script for imgfetch
+
+import os
+import argparse
+from urllib.parse import urlparse, parse_qs
+
+# package imports
+from imgfetch.api import danbooru
+from imgfetch.api import fourchan
+from imgfetch import logger, util
+
+
+def main():
+    SITE_URLS = {"fourchan":"boards.4chan.org", "danbooru":"danbooru.donmai.us"}
+    METHODS = ["md5", "name"]
+
+    parser = argparse.ArgumentParser(description='Downloads file batches from 4chan or Danbooru')
+
+    parser.add_argument('-d', '--directory', metavar='DIR',
+                        type=str,
+                        help='The download directory')
+
+    parser.add_argument('-m', '--method', 
+                        type=str, default="md5",
+                        help='Method to check downloaded files against local ones (md5, name)')
+
+    parser.add_argument('-q', '--quiet', 
+                        action="store_true", default=False,
+                        help='Turns off output (excluding stderr)')
+
+    parser.add_argument('-v', '--verbose', 
+                        action="count", default=1,
+                        help='Turns on more verbose output with levels')
+
+    parser.add_argument('url', metavar='URL', 
+                    nargs='+', type=str,
+                    help='The urls to download from')
+
+    args = parser.parse_args()
+
+    # Makes things verbose
+    args.verbose = args.verbose
+    if args.quiet:
+        args.verbose = 0
+    if args.method not in METHODS:
+        logger.error(1, args.method + " is not a valid comparing method")
+
+    # If directory argument is given, download all files there, 
+    # otherwise it will be set by the api interface
+    if args.directory:
+        if not os.path.exists(args.directory):
+            util.make_dir(args.verbose, args.directory)
+    else:
+        args.directory = '.'
+
+    # Url parsing to determine which website api interface to use
+    with util.cd(args.directory):
+        for url in args.url:
+            site = urlparse(url).netloc
+
+            if site == SITE_URLS["fourchan"]:
+                fourchan.proceed(url=url, args=args)
+            elif site == SITE_URLS["danbooru"]:
+                danbooru.proceed(url=url, args=args)
+            else:
+                logger.error(1, url + " is not a vaid url")
+
+        logger.output(args.verbose, "Finished")
+
+if __name__ == "__main__":
+    main()

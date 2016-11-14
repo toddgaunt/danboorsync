@@ -1,25 +1,18 @@
 #
 # License: MIT (doc/LICENSE)
 # Author: Todd Gaunt
+#
+# File: imgfetch/util.py
+# This file contains various utility functions
 
 import re
 import os
 import hashlib
 
-class cd:
-    """ cd
-    description:
-        Context manager for changing the current working directory
+from imgfetch import logger
 
-    examples:
-        >> print(os.getcwd())
-        /
-        >> with cd("/path/to/dir"):
-        >>     print(os.getcwd())
-        /path/to/dir
-        >> print(os.getcwd())
-        /
-    """
+class cd:
+    """Context manager for changing the current working directory"""
     def __init__(self, new_path):
         self.new_path = os.path.expanduser(new_path)
 
@@ -30,65 +23,35 @@ class cd:
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_path)
 
-def get_file_md5sums(path="."):
-    """ get_file_md5sums
 
-    description:
-        Creates a dictionary of hex-encoded md5sums of files in the given path
-
-    args:
-        param1(str): path to files
-
-    return:
-        dict[str, str]:
-            upon success, will return a dictionary with
-            the relation [md5sum:filename]
-
-            upon failure, will return an empty dictionary
-
-    example:
-        >> md5sums = get_file_md5sums("/path/to/files")
-        >> print(md5sums)
-        ["md5sum1": "filename", "md5sum2": "filename"]
-    """
-    files = os.listdir(path)
-    md5sums = {}
-    for fd in files:
-        fhash = hashlib.md5()
-        with open(fd, "rb") as f:
-            for chunk in iter(lambda: f.read(4096), b""):
-                fhash.update(chunk)
-        md5sums[fhash.digest().hex()] = fd
-    return md5sums
-
-def remove_chars(string):
-    """ remove_chars
-
-    description:
-        Removes all non-alphanumeric and non-underscore/dashes from a string
-
-    args:
-        param1(str): string to strip characters from
-
-    return:
-        (str): new string object derived from input string
-
-    example:
-        >> str1 = "AB--@**(twenty?_2"
-        >> str2 = remove_chars(str1)
-        >> print(str2)
-        AB--twenty_2
-
-    """
-    tmp_string = []
-    string = string.split(' ')
-    for i in range(len(string)):
+def remove_chars(list):
+    """Removes all non-alphanumeric and non-underscore/dashes from a string"""
+    tmp_list = []
+    list = list.split(' ')
+    for i in range(len(list)):
         tmp = ''
-        for j in string[i]:
+        for j in list[i]:
             if re.match(r'\w', j):
                 tmp += j
         if tmp != '':
-            tmp_string.append(tmp)
-    return '_'.join(tmp_string)
+            tmp_list.append(tmp)
+    return '_'.join(tmp_list)
 
-# End of File
+def get_file_md5s():
+    """Creates a list of unencoded md5sums of files in the current directory"""
+    files = os.listdir()
+    md5sums = []
+    for i in files:
+        hash = hashlib.md5()
+        with open(i, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash.update(chunk)
+        md5sums.append(hash.digest())
+    return md5sums
+
+def make_dir(directory):
+    """Trys to create a directory, logs the output"""
+    try:
+        os.mkdir(directory)
+    except FileExistsError:
+        logger.warning(0, "File " + "'" + directory + "'" + " already exists")
