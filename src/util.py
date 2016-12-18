@@ -54,6 +54,8 @@ def get_file_md5sums(path="."):
     files = os.listdir(path)
     md5sums = {}
     for fd in files:
+        if os.path.isdir(fd):
+            continue
         fhash = hashlib.md5()
         with open(fd, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):

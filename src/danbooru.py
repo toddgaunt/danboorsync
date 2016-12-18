@@ -9,27 +9,7 @@ from urllib.request import urlopen
 from danboorsync import util
 
 class image_post():
-    """ image_post
-
-    description:
-        a class for containing information pertaining to a danbooru post with
-        information regarding an image file
-    """
-
-    def __init__(self):
-        self.md5sum = ""
-
-        self.character_tags = ""
-        self.general_tags = ""
-        self.artist_tags = ""
-
-        self.filename = ""
-        self.file_url = ""
-        self.file_ext = ""
-
-def new_post(item):
-    """ new post
-
+    """ image_post.__init__
     description:
         Creates and returns a new post object based on a dictionary from
         a danbooru json file's data
@@ -42,18 +22,26 @@ def new_post(item):
         json file data
     """
 
-    post = image_post()
+    def __init__(self, item=None):
+        if (None == item):
+            self.md5sum = ""
 
-    post.md5sum = item["md5"]
+            self.character_tags = ""
+            self.general_tags = ""
+            self.artist_tags = ""
 
-    post.character_tags = item["tag_string_character"]
-    post.general_tags = item["tag_string_general"]
-    post.artist_tags = item["tag_string_artist"]
+            self.filename = ""
+            self.file_url = ""
+            self.file_ext = ""
+        else:
+            self.md5sum = item["md5"]
 
-    post.file_url = item["file_url"]
-    post.file_ext = item["file_ext"]
+            self.character_tags = item["tag_string_character"]
+            self.general_tags = item["tag_string_general"]
+            self.artist_tags = item["tag_string_artist"]
 
-    return post
+            self.file_url = item["file_url"]
+            self.file_ext = item["file_ext"]
 
 def extract_image_posts(json):
     """ extract_image_posts
@@ -79,12 +67,12 @@ def extract_image_posts(json):
         if "image_width" not in keys:
             continue
         # Construct a new post derived from the json file data
-        posts.append(new_post(item))
+        posts.append(image_post(item))
 
     return posts
 
-def download_post(post, scheme, netloc):
-    """ download_post
+def download_image_post(post, scheme, netloc):
+    """ download_image_post
 
     description:
         Writes the file that the given post refers to
@@ -97,17 +85,17 @@ def download_post(post, scheme, netloc):
 
     example:
         >> post = image_post()
-        >> filename = download_post(post)
+        >> filename = download_image_post(post)
     """
 
     url = "{}://{}{}".format(scheme, netloc, post.file_url)
-    filename = filename_gen(post)
+    filename = image_post_filename_gen(post)
     with open(filename, 'wb') as fd:
         fd.write(urlopen(url).read())
     return filename
 
-def filename_gen(post):
-    """ filename_gen
+def image_post_filename_gen(post):
+    """ image_post_filename_gen
 
     description:
         Generates a filename for Danbooru files using the post information
@@ -120,7 +108,7 @@ def filename_gen(post):
 
     example:
         >> post = image_post()
-        >> filename = filename_gen(post)
+        >> filename = image_post_filename_gen(post)
     """
 
     name = ""
@@ -145,8 +133,8 @@ def filename_gen(post):
 
     return name
 
-def jsonize(raw_url):
-    """ jsonize
+def jsonize_post_url(raw_url):
+    """ jsonize_post_url
 
     description:
         Uses the given url string to fetch a related json file
@@ -159,8 +147,8 @@ def jsonize(raw_url):
 
     example:
         In the below example, assuming post.html had a corresponding post.json,
-        jsonize would download and convert it into a python list[dict[str,str]]
-        >> json_dict = jsonize("www.example.com/post.html")
+        jsonize_post_url would download and convert it into a python list[dict[str,str]]
+        >> json_dict = jsonize_post_url("www.example.com/post.html")
     """
     url = urlparse(raw_url)
     json_url = url.scheme+"://"+url.netloc+url.path+".json"+"?"+url.query
