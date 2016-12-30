@@ -71,7 +71,7 @@ def extract_image_posts(json):
 
     return posts
 
-def download_image_post(post, scheme, netloc):
+def download_image_post(filename, post, scheme, netloc):
     """ download_image_post
 
     description:
@@ -89,7 +89,6 @@ def download_image_post(post, scheme, netloc):
     """
 
     url = "{}://{}{}".format(scheme, netloc, post.file_url)
-    filename = image_post_filename_gen(post)
     with open(filename, 'wb') as fd:
         fd.write(urlopen(url).read())
     return filename

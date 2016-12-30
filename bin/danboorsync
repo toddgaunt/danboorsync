@@ -83,7 +83,7 @@ def parse_args():
         logger.error(lg, "Invalid url, doesn't match danbooru netloc")
 
     if not args.output:
-        args.output = "."
+        logger.error(lg, "Please specify an output directory with the -o flag")
     if not os.path.exists(args.output):
         logger.info(lg, "Creating new directory: {}".format(args.output))
         try:
@@ -105,36 +105,45 @@ def main():
     # Change directory to the target download directory,
     # then download all pages specified
     with util.cd(args.output):
-        # Calculate all md5sums in target download directory
+        # Calculate all md5sums in target download directory recursively
         md5sums = util.get_file_md5sums()
         for number in args.pages:
-            # Append which page to be downloaded as a query on the url
-            page_url = danbooru.appendqueries(args.url, \
-                    ["page={}".format(number)])
-            # Download the json file into a list
-            json = danbooru.jsonize_post_url(page_url)
-            # Transform the json list into a list of post objects
-            posts = danbooru.extract_image_posts(json)
+            pg_dir = "page_{}".format(number)
 
-            # The trunc variable decides how much to truncate the filenames for output
-            if (args.verbose == 0):
-                trunc = 0 
-            if (args.verbose == 1):
-                trunc = 30 
-            if (args.verbose == 2):
-                trunc = -1
-            for post in posts:
-                if post.md5sum not in md5sums:
-                    filename = danbooru.download_image_post(post, "http", \
-                            "danbooru.donmai.us")
+            try:
+                os.mkdir(pg_dir)
+            except FileExistsError:
+                logger.info(lg, "\"{}/\" already exists".format(pg_dir))
 
-                    logger.info(lg, "<\033[33mNEW FILE\033[0m> {}".format(filename[0:trunc + 32]+"..."))
-                    # Add the new file to the dict of calculated md5sums
-                    md5sums[post.md5sum] = filename
-                else:
-                    logger.info(lg, \
-                        "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
-                        md5sums[post.md5sum][0:trunc]+"...", post.md5sum))
+            with util.cd(pg_dir):
+                # Append which page to be downloaded as a query on the url
+                page_url = danbooru.appendqueries(args.url, \
+                        ["page={}".format(number)])
+                # Download the json file into a list
+                json = danbooru.jsonize_post_url(page_url)
+                # Transform the json list into a list of post objects
+                posts = danbooru.extract_image_posts(json)
+
+                # The trunc variable decides how much to truncate the filenames for output
+                if (args.verbose == 0):
+                    trunc = 0 
+                if (args.verbose == 1):
+                    trunc = 30 
+                if (args.verbose == 2):
+                    trunc = None
+                for post in posts:
+                    filename = danbooru.image_post_filename_gen(post)
+                    if post.md5sum not in md5sums:
+                        danbooru.download_image_post(filename, post, "http", \
+                                "danbooru.donmai.us")
+
+                        logger.info(lg, "<\033[33mNEW FILE\033[0m> {}".format(filename[0:trunc + 32]+"..."))
+                        # Add the new file to the dict of calculated md5sums
+                        md5sums[post.md5sum] = filename
+                    else:
+                        logger.info(lg, \
+                            "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
+                            filename[0:trunc], md5sums[post.md5sum][0:trunc]+"..."))
 
 if __name__ == "__main__":
     main()

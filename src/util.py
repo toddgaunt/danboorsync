@@ -35,6 +35,7 @@ def get_file_md5sums(path="."):
 
     description:
         Creates a dictionary of hex-encoded md5sums of files in the given path
+        recursively.
 
     args:
         param1(str): path to files
@@ -51,16 +52,20 @@ def get_file_md5sums(path="."):
         >> print(md5sums)
         ["md5sum1": "filename", "md5sum2": "filename"]
     """
-    files = os.listdir(path)
     md5sums = {}
-    for fd in files:
-        if os.path.isdir(fd):
-            continue
-        fhash = hashlib.md5()
-        with open(fd, "rb") as f:
-            for chunk in iter(lambda: f.read(4096), b""):
-                fhash.update(chunk)
-        md5sums[fhash.digest().hex()] = fd
+    roots = [path]
+    while(roots != []):
+        branch = roots.pop()
+        for twig in os.listdir(branch):
+            twig = os.path.join(branch, twig)
+            if os.path.isdir(twig):
+                roots.append(twig)
+            else:
+                fhash = hashlib.md5()
+                with open(twig, "rb") as f:
+                    for chunk in iter(lambda: f.read(4096), b""):
+                        fhash.update(chunk)
+                md5sums[fhash.digest().hex()] = twig
     return md5sums
 
 def remove_chars(string):
