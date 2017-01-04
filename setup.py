@@ -11,7 +11,7 @@ setup(
 
     packages = ['danboorsync'],
 
-    package_dir =  {'danboorsync':'src'},
+    package_dir =  {'danboorsync':'danboorsync'},
 
     # Change these per distribution
     data_files = [('/usr/share/man/man1', ['doc/danboorsync.1']),
