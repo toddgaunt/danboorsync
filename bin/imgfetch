@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+# package imports
+import argparse
+import sys
+
+from imgfetch import danbooru
+
+def main():
+    parser = argparse.ArgumentParser(description='Downloads images en masse from the selected site')
+
+    parser.add_argument('subcommand', metavar='subcommand',
+                    type=str,
+                    help='subcommand to run. Subcommands are [danbooru]')
+
+    args = parser.parse_args(sys.argv[1:2])
+
+    if args.subcommand == "danbooru":
+        danbooru.run(sys.argv[2:])
+
+if __name__ == "__main__":
+    main()

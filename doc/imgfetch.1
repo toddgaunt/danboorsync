@@ -1,14 +1,15 @@
-.TH danboorsync 1 "2016-08-20" "version 1.0"
+.TH imgfetch 1 "2016-08-20" "version 1.0"
 .SH NAME
-danboorsync - file fetching utility for danbooru.domnai.us
+imgfetch - file fetching utility for danbooru.domnai.us
 
 .SH SYNOPSIS
-.B danboorsync [ options ] URL [URL ...]
+.B imgfetch [ options ] URL [URL ...]
 
 .SH DESCRIPTION
 Synchronize a directory with a danbooru image tag search
 
-.SH OPTIONS
+.SH SUBCOMMANDS
+.B danbooru
 .BR \-h "," \-\-help
 Show a help message and exit
 .PP
@@ -16,7 +17,7 @@ Show a help message and exit
 Specify a directory to download to. Default is current directory.
 .PP
 .BR \-p "," \-\-pages =\fIrange\fR
-Specify a page range to download from, e.g. "danboorsync -p 1-5,10,15-20"
+Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20"
 .PP
 .BR \-q "," \-\-quiet
 Turns off all output
@@ -26,10 +27,10 @@ Display files downloaded
 .PP
 
 .SH BUGS
-Please report bugs by emailing Todd Gaunt at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/danboorsync if you've got nothing better to do.
+Please report bugs by emailing Todd Gaunt at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/imgfetch if you've got nothing better to do.
 
 .SH AUTHOR
-This man page and danboorsync itself were originally authored by Todd Gaunt.
+This man page and imgfetch itself were originally authored by Todd Gaunt.
 
 .SH LICENSE
 The MIT License (MIT)

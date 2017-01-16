@@ -4,19 +4,19 @@ from distutils.core import setup
 setup(
     description = 'File downloader for danbooru',
     author = 'Todd Gaunt',
-    url = 'https://www.github.com/toddgaunt/danboorsync',
-    download_url = 'https://www.github.com/toddgaunt/danboorsync',
+    url = 'https://www.github.com/toddgaunt/imgfetch',
+    download_url = 'https://www.github.com/toddgaunt/imgfetch',
     author_email = 'toddgaunt@protonmail.ch',
     version = '1.1',
 
-    packages = ['danboorsync'],
+    packages = ['imgfetch'],
 
-    package_dir =  {'danboorsync':'danboorsync'},
+    package_dir =  {'imgfetch':'imgfetch'},
 
     # Change these per distribution
-    data_files = [('/usr/share/man/man1', ['doc/danboorsync.1']),
-                  ('/usr/share/licenses/danboorsync/LICENSE', ['doc/LICENSE'])],
+    data_files = [('/usr/share/man/man1', ['doc/imgfetch.1']),
+                  ('/usr/share/licenses/imgfetch/LICENSE', ['doc/LICENSE'])],
 
-    scripts = ['bin/danboorsync'],
-    name = 'danboorsync'
+    scripts = ['bin/imgfetch'],
+    name = 'imgfetch'
 )
