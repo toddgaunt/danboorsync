@@ -107,43 +107,41 @@ def main():
     with util.cd(args.output):
         # Calculate all md5sums in target download directory recursively
         md5sums = util.get_file_md5sums()
-        for number in args.pages:
-            pg_dir = "page_{}".format(number)
+        for pg_num in args.pages:
+            # Append which page to be downloaded as a query on the url
+            page_url = danbooru.appendqueries(args.url, \
+                    ["page={}".format(pg_num)])
+            # Download the json file into a list
+            json = danbooru.jsonize_post_url(page_url)
+            # Transform the json list into a list of post objects
+            posts = danbooru.extract_image_posts(json)
 
-            try:
-                os.mkdir(pg_dir)
-            except FileExistsError:
-                logger.info(lg, "\"{}/\" already exists".format(pg_dir))
+            # The trunc variable decides how much to truncate the filenames for output
+            if (args.verbose == 0):
+                trunc = 0 
+            if (args.verbose == 1):
+                trunc = 30 
+            if (args.verbose == 2):
+                trunc = None
+            for post in posts:
+                filepath = danbooru.image_post_filepath_gen(post)
+                filename = danbooru.image_post_filename_gen(post)
+                fullpath = filepath + "/" + filename
+                try:
+                    os.mkdir(filepath)
+                except FileExistsError:
+                    pass
+                if post.md5sum not in md5sums:
+                    danbooru.download_image_post(fullpath, post, "http", \
+                            "danbooru.donmai.us")
 
-            with util.cd(pg_dir):
-                # Append which page to be downloaded as a query on the url
-                page_url = danbooru.appendqueries(args.url, \
-                        ["page={}".format(number)])
-                # Download the json file into a list
-                json = danbooru.jsonize_post_url(page_url)
-                # Transform the json list into a list of post objects
-                posts = danbooru.extract_image_posts(json)
-
-                # The trunc variable decides how much to truncate the filenames for output
-                if (args.verbose == 0):
-                    trunc = 0 
-                if (args.verbose == 1):
-                    trunc = 30 
-                if (args.verbose == 2):
-                    trunc = None
-                for post in posts:
-                    filename = danbooru.image_post_filename_gen(post)
-                    if post.md5sum not in md5sums:
-                        danbooru.download_image_post(filename, post, "http", \
-                                "danbooru.donmai.us")
-
-                        logger.info(lg, "<\033[33mNEW FILE\033[0m> {}".format(filename[0:trunc + 32]+"..."))
-                        # Add the new file to the dict of calculated md5sums
-                        md5sums[post.md5sum] = filename
-                    else:
-                        logger.info(lg, \
-                            "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
-                            filename[0:trunc], md5sums[post.md5sum][0:trunc]+"..."))
+                    logger.info(lg, "<\033[33mNEW FILE\033[0m> {}".format(fullpath[0:trunc + 32]+"..."))
+                    # Add the new file to the dict of calculated md5sums
+                    md5sums[post.md5sum] = fullpath 
+                else:
+                    logger.info(lg, \
+                        "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
+                        fullpath[0:trunc], md5sums[post.md5sum][0:trunc]+"..."))
 
 if __name__ == "__main__":
     main()

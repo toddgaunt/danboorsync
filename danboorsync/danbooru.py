@@ -93,23 +93,21 @@ def download_image_post(filename, post, scheme, netloc):
         fd.write(urlopen(url).read())
     return filename
 
+def image_post_filepath_gen(post):
+    path = ""
+    max_path_len = 200
+
+    if post.character_tags != "":
+        for character in post.character_tags.split():
+            next_tag = util.remove_chars(character) + '-'
+            if len(path) + len(next_tag) >= max_path_len:
+                break
+            path += next_tag
+        return path[0:-1]
+    else:
+        return "no_character_tag"
+
 def image_post_filename_gen(post):
-    """ image_post_filename_gen
-
-    description:
-        Generates a filename for Danbooru files using the post information
-
-    args:
-        param1(image_post): a image_post object
-
-    return:
-        str: the filename generated from the post object
-
-    example:
-        >> post = image_post()
-        >> filename = image_post_filename_gen(post)
-    """
-
     name = ""
     md5sum = str(post.md5sum)
     extension = str(post.file_ext)
@@ -117,13 +115,13 @@ def image_post_filename_gen(post):
     max_name_len = 200 - len(md5sum) - (len(extension) + 1)
 
     for character in post.character_tags.split():
-        next_tag = util.remove_chars(character) + '_'
+        next_tag = util.remove_chars(character) + '-'
         if len(name) + len(next_tag) >= max_name_len:
             break
         name += next_tag
 
     for tag in post.general_tags.split():
-        next_tag = util.remove_chars(tag) + '_'
+        next_tag = util.remove_chars(tag) + '-'
         if len(name) + len(next_tag) >= max_name_len:
             break
         name += next_tag
