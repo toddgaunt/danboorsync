@@ -23,7 +23,6 @@ imgfetch [ options ] [ command ]
 | command | description |
 | --- | --- |
 | -p range | Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20" |
-| --- | --- |
 | URL | Required argument, the url of the image search to download e.g. "http://danbooru.donmai.us/posts?tags=nanakorobi_nene" |
 
 #####
