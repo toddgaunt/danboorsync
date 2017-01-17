@@ -1,44 +1,38 @@
-.TH imgfetch 1 "2016-08-20" "version 1.0"
+.TH imgfetch 1 "version 2.0"
 .SH NAME
-imgfetch - file fetching utility for danbooru.domnai.us
+imgfetch - file fetching utility for various image-hosting websites, [danbooru.domnai.us]
 
 .SH SYNOPSIS
-.B imgfetch [ options ] URL [URL ...]
+.B imgfetch [ options ] [subcommand]
+.PP
 
 .SH DESCRIPTION
-Synchronize a directory with a danbooru image tag search
+Download image batchs from a website. 
 
-.SH SUBCOMMANDS
-.B danbooru
+.SH OPTIONS
+.TP
 .BR \-h "," \-\-help
 Show a help message and exit
-.PP
-.BR \-o "," \-\-output =\fIdir\fR
-Specify a directory to download to. Default is current directory.
-.PP
-.BR \-p "," \-\-pages =\fIrange\fR
-Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20"
-.PP
+.TP
 .BR \-q "," \-\-quiet
-Turns off all output
-.PP
+Disable verbose output
+.TP
 .BR \-v "," \-\-verbose
-Display files downloaded
-.PP
+Enable verbose output
+.TP
+.BR \-o "," \-\-output =\fIdir\fR
+Specify a directory to download to. Must be specified with this flag or else command will fail.
+
+.SH SUBCOMMAND OPTIONS
+Please see the manpage for each subcommand, it will be the same name as the subcommand.
+
+.SH SUBCOMMANDS
+.TP 
+.B imgfetch-danbooru
+Syncronize a local directory with a danbooru tag search url.
 
 .SH BUGS
-Please report bugs by emailing Todd Gaunt at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/imgfetch if you've got nothing better to do.
+Please report bugs by emailing me at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/imgfetch if you've got nothing better to do.
 
 .SH AUTHOR
 This man page and imgfetch itself were originally authored by Todd Gaunt.
-
-.SH LICENSE
-The MIT License (MIT)
-
-Copyright (c) 2016 Todd Gaunt
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
