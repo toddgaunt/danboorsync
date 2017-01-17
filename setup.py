@@ -15,6 +15,7 @@ setup(
 
     # Change these per distribution
     data_files = [('/usr/share/man/man1', ['doc/imgfetch.1']),
+                  ('/usr/share/man/man1', ['doc/imgfetch-danbooru.1']),
                   ('/usr/share/licenses/imgfetch/LICENSE', ['doc/LICENSE'])],
 
     scripts = ['bin/imgfetch'],
