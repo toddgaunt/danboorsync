@@ -68,7 +68,7 @@ def get_file_md5sums(path="."):
                 md5sums[fhash.digest().hex()] = twig
     return md5sums
 
-def remove_chars(string):
+def remove_non_posix_chars(string):
     """ remove_chars
 
     description:

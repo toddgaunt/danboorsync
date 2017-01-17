@@ -2,7 +2,6 @@
 # License: MIT (doc/LICENSE)
 # Author: Todd Gaunt
 
-import argparse
 import re
 import os
 import json
@@ -27,17 +26,7 @@ class image_post():
         json file data
     """
     def __init__(self, item=None):
-        if (None == item):
-            self.md5sum = ""
-
-            self.character_tags = ""
-            self.general_tags = ""
-            self.artist_tags = ""
-
-            self.filename = ""
-            self.file_url = ""
-            self.file_ext = ""
-        else:
+        try:
             self.md5sum = item["md5"]
 
             self.character_tags = item["tag_string_character"]
@@ -46,95 +35,46 @@ class image_post():
 
             self.file_url = item["file_url"]
             self.file_ext = item["file_ext"]
+        except KeyError:
+            pass
+    def path_gen(self):
+        path = ""
+        max_path_len = 200
 
-def extract_image_posts(json):
-    """ extract_image_posts
+        if self.character_tags != "":
+            for character in self.character_tags.split():
+                next_tag = util.remove_non_posix_chars(character) + '-'
+                if len(path) + len(next_tag) >= max_path_len:
+                    break
+                path += next_tag
+            return path[0:-1]
+        else:
+            return "no_character_tag"
 
-    description:
-        Converts any posts in the given json data that refer to images into
-        post objects
+    def filename_gen(self):
+        name = ""
+        md5sum = str(self.md5sum)
+        extension = str(self.file_ext)
 
-    args:
-        param1(list[dict[str,str]]): a loaded json file, usually from jsonize()
+        max_name_len = 200 - len(md5sum) - (len(extension) + 1)
 
-    return:
-        list[post]: a list of post objects generated from the json data
-    """
-
-    posts = [];
-    for item in json:
-        # Load all the keys from the json dictionary
-        keys = item.keys()
-        # Skip the post in the jason file if it doesn't contain these keys
-        if "md5" not in keys:
-            continue
-        if "image_width" not in keys:
-            continue
-        # Construct a new post derived from the json file data
-        posts.append(image_post(item))
-
-    return posts
-
-def download_image_post(filename, post, scheme, netloc):
-    """ download_image_post
-
-    description:
-        Writes the file that the given post refers to
-
-    args:
-        param1(image_post): a image_post object
-
-    return:
-        str: the filename the file was written to
-
-    example:
-        >> post = image_post()
-        >> filename = download_image_post(post)
-    """
-
-    url = "{}://{}{}".format(scheme, netloc, post.file_url)
-    with open(filename, 'wb') as fd:
-        fd.write(urlopen(url).read())
-    return filename
-
-def image_post_path_gen(post):
-    path = ""
-    max_path_len = 200
-
-    if post.character_tags != "":
-        for character in post.character_tags.split():
-            next_tag = util.remove_chars(character) + '-'
-            if len(path) + len(next_tag) >= max_path_len:
+        for character in self.character_tags.split():
+            next_tag = util.remove_non_posix_chars(character) + '-'
+            if len(name) + len(next_tag) >= max_name_len:
                 break
-            path += next_tag
-        return path[0:-1]
-    else:
-        return "no_character_tag"
+            name += next_tag
 
-def image_post_name_gen(post):
-    name = ""
-    md5sum = str(post.md5sum)
-    extension = str(post.file_ext)
+        for tag in self.general_tags.split():
+            next_tag = util.remove_non_posix_chars(tag) + '-'
+            if len(name) + len(next_tag) >= max_name_len:
+                break
+            name += next_tag
+        name += md5sum
+        name += "." + extension
 
-    max_name_len = 200 - len(md5sum) - (len(extension) + 1)
+        return name
 
-    for character in post.character_tags.split():
-        next_tag = util.remove_chars(character) + '-'
-        if len(name) + len(next_tag) >= max_name_len:
-            break
-        name += next_tag
-
-    for tag in post.general_tags.split():
-        next_tag = util.remove_chars(tag) + '-'
-        if len(name) + len(next_tag) >= max_name_len:
-            break
-        name += next_tag
-    name += md5sum
-    name += "." + extension
-
-    return name
-
-def jsonize_post_url(raw_url):
+def download_json_post(raw_url):
     """ jsonize_post_url
 
     description:
@@ -227,91 +167,60 @@ def string_range_parse(numbers):
     return pages
 
 # Driver of danbooru
-def run(argv):
-    parser = argparse.ArgumentParser(description='Downloads images en masse from Danbooru')
+def cmd_danbooru(args):
+    lg = logger.logger("imgfetch-danbooru", args.verbose)
 
-    parser.add_argument('-o', '--output', metavar='dir',
-                        type=str,
-                        help='Specify a directory to create the download directory')
-
-    parser.add_argument('-p', '--pages', metavar='range',
-                        type=str, default="1",
-                        help='Specify a page range to download from, \
-                                e.g. -p 1-5,10,15-20')
-
-    parser.add_argument('-q', '--quiet',
-                        action="store_true", default=False,
-                        help='Turn off all output')
-
-    parser.add_argument('-v', '--verbose',
-                        action="count", default=1,
-                        help='Display files downloaded')
-
-    parser.add_argument('url', metavar='url',
-                    type=str,
-                    help='Url to download from')
-
-    args = parser.parse_args(argv)
-
-    # Set the verbosity
-    if args.quiet:
-        args.verbose = 0
-
-    lg = logger.logger("danbooru", args.verbose)
-
-    if not args.output:
-        logger.error(lg, "Please specify an output directory with the -o flag")
-
-    if not os.path.exists(args.output):
-        logger.info(lg, "Creating new directory: {}".format(args.output))
-        try:
-            os.mkdir(args.output)
-        except FileExistsError:
-            logger.error(lg, "Could not create directory: {}".format(args.output))
-    else:
-        logger.info(lg, "Using existing directory: {}".format(args.output))
+    # Calculate all md5sums in target download directory recursively
+    md5sums = util.get_file_md5sums('.')
 
     # Turn the string of numbers into a usable list
     args.pages = string_range_parse(args.pages.split(','))
+    for page in args.pages:
+        # Append which page to be downloaded as a query on the url
+        page_url = appendqueries(args.url, \
+                ["page={}".format(page)])
+        netloc = urlparse(page_url).netloc
+        # Download the json file into a list
+        json = download_json_post(page_url)
 
-    # Change directory to the target download directory,
-    # then download all pages specified
-    with util.cd(args.output):
-        # Calculate all md5sums in target download directory recursively
-        md5sums = util.get_file_md5sums()
-        for pg_num in args.pages:
-            # Append which page to be downloaded as a query on the url
-            page_url = danbooru.appendqueries(args.url, \
-                    ["page={}".format(pg_num)])
-            # Download the json file into a list
-            json = danbooru.jsonize_post_url(page_url)
-            # Transform the json list into a list of post objects
-            posts = danbooru.extract_image_posts(json)
+        # Transform the json list into a list of post objects
+        posts = [];
+        for item in json:
+            # Load all the keys from the json dictionary
+            keys = item.keys()
+            # Skip the post in the jason file if it doesn't contain these keys
+            if ("md5" not in keys) or ("image_width" not in keys):
+                continue
+            # Construct a new post derived from the json file data
+            posts.append(image_post(item))
 
-            # The trunc variable decides how much to truncate the filenames for output
-            if (args.verbose == 0):
-                trunc = 0
-            if (args.verbose == 1):
-                trunc = 30
-            if (args.verbose == 2):
-                trunc = None
-            for post in posts:
-                filepath = danbooru.image_post_path_gen(post)
-                filename = danbooru.image_post_name_gen(post)
-                fullpath = filepath + "/" + filename
-                try:
-                    os.mkdir(filepath)
-                except FileExistsError:
-                    pass
-                if post.md5sum not in md5sums:
-                    danbooru.download_image_post(fullpath, post, "http", \
-                            "danbooru.donmai.us")
+        # The trunc variable decides how much to truncate the filenames for output
+        if (args.verbose == 0):
+            trunc = 0
+        if (args.verbose == 1):
+            trunc = 20
+        if (args.verbose == 2):
+            trunc = None
+        for post in posts:
+            directory = post.path_gen()
+            filename = post.filename_gen()
+            fullpath = "{}/{}".format(directory, filename)
+            try:
+                os.mkdir(directory)
+            except FileExistsError:
+                pass
+            if post.md5sum not in md5sums:
+                # Download the image
+                with open(fullpath, 'wb') as fd:
+                    fd.write(urlopen("http://{}/{}".format(\
+                            netloc ,post.file_url)).read())
 
-                    logger.info(lg, "<\033[33mNEW FILE\033[0m> {}".format(fullpath[0:trunc + 32]+"..."))
-                    # Add the new file to the dict of calculated md5sums
-                    md5sums[post.md5sum] = fullpath
-                else:
-                    logger.info(lg, \
-                        "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
-                        fullpath[0:trunc], md5sums[post.md5sum][0:trunc]+"..."))
+                    logger.info(lg, "<\033[33mNEW FILE\033[0m> {}".format(fullpath[0:trunc*2] + "..."))
+                # Add the new file to the dict of calculated md5sums
+                md5sums[post.md5sum] = fullpath
+            else:
+                logger.info(lg, \
+                    "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
+                    fullpath[0:trunc], md5sums[post.md5sum][0:trunc]+"..."))
+
 # End of File
