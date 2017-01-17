@@ -1,42 +1,44 @@
-Danboorsync
+imgfetch
 ========
 
 ### A file downloader for Danbooru
 
-Danboorsync lets you syncronize a directory of pictures according to a tag search on danbooru
+imgfetch lets you syncronize a directory of pictures according to a tag search on danbooru
 
-#### SUPPORTED SITES
+### SUPPORTED SITES
 
-Danbooru -> https://danbooru.donmai.us/
+imgfetch-danbooru -> https://danbooru.donmai.us/
 
-#### USAGE
+### USAGE
 
 Run by entering:
 ```python
-python3 danboorsync [ options ] URL [URL ...]
+imgfetch [ options ] [ command ] 
 ```
 
-#### OPTIONS
+### SUBCOMMANDS
 
-Options | explanation
---------|------------
--h | Show a help message and exit
--o dir | Specify a directory to download to. Default is current directory.
--p range | Specify a page range to download from, e.g. "danboorsync -p 1-5,10,15-20"
--q | Turns off all output
--v | Display files downloaded
-URL | Url to download from
-#### INSTALLATION
+```python
+imgfetch danbooru [ -p ] URL
+```
+
+| command | description |
+| --- | --- |
+| -p range | Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20" |
+
+#####
+
+### INSTALLATION
 
 Enter the following commands:
-```python
-git clone https://www.github.com/toddgaunt/danboorsync
-cd danboorsync
+```sh
+git clone https://www.github.com/toddgaunt/imgfetch
+cd imgfetch
 ./setup.py build
 sudo ./setup.py install
 ```
 
-#### LICENSE
+### LICENSE
 The MIT License (MIT)
 
 Copyright (c) 2016 Todd Gaunt
