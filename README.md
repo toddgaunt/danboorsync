@@ -1,33 +1,39 @@
 imgfetch
 ========
 
-### A file downloader for Danbooru
+### A picture file downloader
 
-imgfetch lets you syncronize a directory of pictures according to a tag search on danbooru
+imgfetch lets you syncronize a directory of pictures.
 
 ### SUPPORTED SITES
 
-imgfetch-danbooru -> https://danbooru.donmai.us/
+imagefetch-danbooru: https://danbooru.donmai.us/
 
 ### USAGE
 
 Run by entering:
 ```python
-imgfetch [ options ] [ command ] 
+imgfetch [ options ] SUBCOMMAND
 ```
 
 ### SUBCOMMANDS
 
-##### imgfetch-danbooru
+##### imgfetch-danbooru [-p <range>] TAGS...
 
 | command | description |
 | --- | --- |
-| -p range | Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20" |
-| URL | Required argument, the url of the image search to download e.g. "http://danbooru.donmai.us/posts?tags=nanakorobi_nene" |
+| -p range | Specify a page range to download from, e.g. "-p 1-5,10,15-20". |
+| TAGS... | The image tags that specify which images to download, e.g.
+"hatsune_miku cute". |
 
 #####
 
-### INSTALLATION
+An example of this subcommand would be:
+```sh
+imgfetch -o vocaloid danbooru -p 1-5 hatsune_miku cute
+```
+
+### DOWNLOAD AND INSTALLATION
 
 Enter the following commands:
 ```sh

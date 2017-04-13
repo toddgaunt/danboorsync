@@ -1,35 +1,35 @@
 .TH IMGFETCH 1 imgfetch
 .SH NAME
-imgfetch - file fetching utility for various image-hosting websites, [danbooru.domnai.us]
+imgfetch - File fetching utility.
 
 .SH SYNOPSIS
 .B imgfetch [-h] [-v] [-q] [-o <path>] SUBCOMMAND
 .PP
 
 .SH DESCRIPTION
-Download image batches from a website given with
+Download image batches from a website specified with
 .IR subcommand . 
 
 .SH OPTIONS
 .TP
-.BR \-h "," \-\-help
-Show a help message and exit
+.B \-h
+Show a help message and exit.
 .TP
-.BR \-q "," \-\-quiet
-Disable verbose output
+.B \-q
+Lower more verbose output. Can be flagged multiple times.
 .TP
-.BR \-v "," \-\-verbose
-Enable verbose output
+.B \-v
+Increase more verbose output. Can be flagged multiple times.
 .TP
-.BR \-o "," \-\-output =\fIdir\fR
-Specify a directory to download to. Must be specified with this flag or else command will fail.
+.B \-o <path>
+Specify a directory to download to. Default is current directory ('.').
 
 .SH SUBCOMMAND OPTIONS
 Please see the manpage for each subcommand.
 
 .SH SUBCOMMANDS
 .TP 
-.B danbooru
+.B imgfetch-danbooru
 Syncronize a local directory with a danbooru tag search url.
 
 .SH BUGS

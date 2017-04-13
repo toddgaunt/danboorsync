@@ -1,6 +1,6 @@
 .TH IMGFETCH-DANBOORU 1 imgfetch-danbooru
 .SH NAME
-imgfetch-danbooru - file fetching utility for various image-hosting websites, [danbooru.domnai.us]
+imgfetch-danbooru - Fetch images from danbooru.domnai.us.
 
 .SH SYNOPSIS
 .B imgfetch-danbooru [-p <range>] TAGS...
@@ -9,30 +9,14 @@ imgfetch-danbooru - file fetching utility for various image-hosting websites, [d
 .SH DESCRIPTION
 Download pictures from danbooru.domnai.us with the provided
 .IR [tags] .
-.PP
-The download directory is specified by the toplevel imgfetch command. Within this directory, more sub-directories are created according to the character tags on the images downloaded. This means if you download from 
-.B http://danbooru.donmai.us/posts?tags=hatsune_miku
-with the output directory 
-.BR download , 
-the directory
-.IR download/hatsune_miku ,
-will be created with all images tagged 
-.B hatsune_miku 
-downloaded there. 
-.PP
-Character tags are concatanated, so if there is an image with the tags 
-.BR hatsune_miku\ asuka ,
-a directory 
-.I download/hatsune_miku-asuka
-will be created for those images. If an image is missing character tags, it will be downloaded to 
-.IR download/no_character_tag . 
+If no tags are provided, the program will exit with -1.
 
 .SH OPTIONS
 .TP
-.BR \-h
+.B \-h
 Show a help message and exit
 .TP
-.BR \-p \fIrange\fR
+.B \-p <range>
 Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20". By
 default, only the first page is downloaded.
 
