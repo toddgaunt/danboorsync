@@ -23,8 +23,7 @@ imgfetch [ options ] SUBCOMMAND
 | command | description |
 | --- | --- |
 | -p range | Specify a page range to download from, e.g. "-p 1-5,10,15-20". |
-| TAGS... | The image tags that specify which images to download, e.g.
-"hatsune_miku cute". |
+| TAGS... | The image tags that specify which images to download, e.g. "hatsune_miku cute". |
 
 #####
 
