@@ -1,10 +1,7 @@
-#
-# License: MIT (doc/LICENSE)
-# Author: Todd Gaunt
+# See LICENSE file for copyright and license details
 
 import re
 import os
-import hashlib
 
 class cd:
     """ cd
@@ -30,62 +27,15 @@ class cd:
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_path)
 
-def get_file_md5sums(path="."):
-    """ get_file_md5sums
-
-    description:
-        Creates a dictionary of hex-encoded md5sums of files in the given path
-        recursively.
-
-    args:
-        param1(str): path to files
-
-    return:
-        dict[str, str]:
-            upon success, will return a dictionary with
-            the relation [md5sum:filename]
-
-            upon failure, will return an empty dictionary
-
-    example:
-        >> md5sums = get_file_md5sums("/path/to/files")
-        >> print(md5sums)
-        ["md5sum1": "filename", "md5sum2": "filename"]
-    """
-    md5sums = {}
-    roots = [path]
-    while(roots != []):
-        branch = roots.pop()
-        for twig in os.listdir(branch):
-            twig = os.path.join(branch, twig)
-            if os.path.isdir(twig):
-                roots.append(twig)
-            else:
-                fhash = hashlib.md5()
-                with open(twig, "rb") as f:
-                    for chunk in iter(lambda: f.read(4096), b""):
-                        fhash.update(chunk)
-                md5sums[fhash.digest().hex()] = twig
-    return md5sums
-
 def remove_non_posix_chars(string):
-    """ remove_chars
-
-    description:
-        Removes all non-alphanumeric and non-underscore/dashes from a string
-
-    args:
-        param1(str): string to strip characters from
+    """
+    Removes all non-alphanumeric and non-underscore/dashes from a string
 
     return:
         (str): new string object derived from input string
 
     example:
-        >> str1 = "AB--@**(twenty?_2"
-        >> str2 = remove_chars(str1)
-        >> print(str2)
-        AB--twenty_2
-
+        "AB--@**(twenty?_2" -> "AB--twenty_2"
     """
     tmp_string = []
     string = string.split(' ')
@@ -97,5 +47,30 @@ def remove_non_posix_chars(string):
         if tmp != '':
             tmp_string.append(tmp)
     return '_'.join(tmp_string)
+
+def find_hash(path, hash_func):
+    """
+    return:
+        dict[str, str]:
+            upon success, will return a dictionary with
+            the relation [chksum:filename]
+
+            upon failure, will return an empty dictionary
+    """
+    chksums = {}
+    roots = [path]
+    while(roots != []):
+        branch = roots.pop()
+        for twig in os.listdir(branch):
+            twig = os.path.join(branch, twig)
+            if os.path.isdir(twig):
+                roots.append(twig)
+            else:
+                hash = hash_func()
+                with open(twig, "rb") as f:
+                    for chunk in iter(lambda: f.read(4096), b""):
+                        hash.update(chunk)
+                chksums[hash.digest().hex()] = twig
+    return chksums
 
 # End of File
