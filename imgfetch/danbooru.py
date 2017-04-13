@@ -182,6 +182,8 @@ def cmd_danbooru(args):
         netloc = urlparse(page_url).netloc
         # Download the json file into a list
         json = download_json_post(page_url)
+        if json == []:
+            logger.error(lg, "Could not download from url {}".format(page_url))
 
         # Transform the json list into a list of post objects
         posts = [];
@@ -222,5 +224,6 @@ def cmd_danbooru(args):
                 logger.info(lg, \
                     "<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format( \
                     fullpath[0:trunc], md5sums[post.md5sum][0:trunc]+"..."))
+    logger.info(lg, "Finished")
 
 # End of File

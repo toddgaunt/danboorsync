@@ -14,7 +14,7 @@ def main():
     subparsers = parser.add_subparsers(help="subcommand to run.")
 
     parser.add_argument("-o", "--output", metavar="dir",
-                        type=str,
+                        type=str, default="imgfetch_tmp",
                         help="specify a directory to create the download directory")
 
     parser.add_argument("-v", "--verbose",
@@ -24,6 +24,8 @@ def main():
     parser.add_argument("-q", "--quiet",
                         action="store_true", default=False,
                         help="disable all output")
+
+    parser.set_defaults(func=None)
 
     # Danbooru arguments
     parser_danbooru = subparsers.add_parser("danbooru", help="Download from a site with danbooru's api")
@@ -50,10 +52,6 @@ def main():
 
     lg = logger.logger("imgfetch", args.verbose)
 
-    if not args.output:
-        parser.print_help()
-        exit(1)
-
     if not os.path.exists(args.output):
         logger.info(lg, "Creating new directory: {}".format(args.output))
         try:
@@ -62,6 +60,10 @@ def main():
             logger.error(lg, "Could not create directory: {}".format(args.output))
     else:
         logger.info(lg, "Using existing directory: {}".format(args.output))
+
+    if args.func == None:
+        parser.print_help()
+        quit(1)
 
     # Run whichever subcommand was run
     with util.cd(args.output):
