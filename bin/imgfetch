@@ -1,73 +1,87 @@
 #!/usr/bin/env python3
+# See LICENSE file for copyright and license details
 
-# package imports
 import argparse
 import sys
 import os
 
-from imgfetch import danbooru
-from imgfetch import logger
+from imgfetch import log
 from imgfetch import util
 
+from imgfetch import danbooru
+
+lg = log.logger("imgfetch", 1)
+
+def usage():
+    sys.stderr.write("usage: imgfetch [-h] [-o <path>] [-v] [-q] SUBCMD\n")
+    exit(-1)
+
 def main():
-    parser = argparse.ArgumentParser(description="downloads images en masse from the selected site")
-    subparsers = parser.add_subparsers(help="subcommand to run.")
+    args = {}
+    # Default arguments
+    args['r'] = False
+    args['o'] = '.'
+    args['v'] = 0
+    args['cmd'] = None
 
-    parser.add_argument("-o", "--output", metavar="dir",
-                        type=str, default="imgfetch_tmp",
-                        help="specify a directory to create the download directory")
+    # Parse arguments
+    argi = 1
+    while (argi < len(sys.argv)):
+        if (('-' == sys.argv[argi][0]) and (2 == len(sys.argv[argi]))):
+            switch = sys.argv[argi][1]
+            if ('h' == switch):
+                usage()
+            elif ('v' == switch):
+                for c in sys.argv[argi][1:]:
+                    if ('v' != c):
+                        usage()
+                    args['v'] += 1
+            elif ('q' == switch):
+                for c in sys.argv[argi][1:]:
+                    if ('q' != c):
+                        usage()
+                    args['v'] -= 1
+            elif ('o' == switch):
+                argi += 1
+                try:
+                    args['o'] = sys.argv[argi]
+                except IndexError:
+                    lg.error("No path given for -o switch.")
+                    usage()
+            else:
+                lg.error("Invalid argument \"{}\".".format(sys.argv[argi]))
+                usage()
+        else:
+            if ("danbooru" == sys.argv[argi].lower()):
+                argi += 1
+                args["cmd"] = danbooru.cmd
+                break
+            else:
+                lg.error("Invalid subcommand \"{}\"".format(sys.argv[argi]));
+                usage()
+        argi += 1
 
-    parser.add_argument("-v", "--verbose",
-                        action="count", default=1,
-                        help="enable verbose output")
+    # A subcommand must be present
+    if (None == args['cmd']):
+        usage()
 
-    parser.add_argument("-q", "--quiet",
-                        action="store_true", default=False,
-                        help="disable all output")
+    # Utilize the arguments
+    lg.level = args['v']
 
-    parser.set_defaults(func=None)
-
-    # Danbooru arguments
-    parser_danbooru = subparsers.add_parser("danbooru", help="Download from a site with danbooru's api")
-
-    parser_danbooru.add_argument('-p', '--pages', metavar='range',
-                        type=str, default="1",
-                        help='specify a page range to download from, \
-                                e.g. -p 1-5,10,15-20')
-
-    parser_danbooru.add_argument('url', metavar='url',
-                    type=str,
-                    help='url to download from')
-
-    parser_danbooru.set_defaults(func=danbooru.cmd_danbooru)
-
-    # Additional parsers go below here
-
-    # Parse the args
-    args = parser.parse_args(sys.argv[1:])
-
-    # Run the top-level arguments
-    if args.quiet:
-        args.verbose = 0
-
-    lg = logger.logger("imgfetch", args.verbose)
-
-    if not os.path.exists(args.output):
-        logger.info(lg, "Creating new directory: {}".format(args.output))
+    if (not os.path.exists(args['o'])):
         try:
-            os.mkdir(args.output)
+            os.mkdir(args['o'])
         except FileExistsError:
-            logger.error(lg, "Could not create directory: {}".format(args.output))
-    else:
-        logger.info(lg, "Using existing directory: {}".format(args.output))
-
-    if args.func == None:
-        parser.print_help()
-        quit(1)
+            lg.fatal("Could not create directory \"{}\".".format(args['o']))
 
     # Run whichever subcommand was run
-    with util.cd(args.output):
-        args.func(args)
+    try:
+        with util.cd(args['o']):
+            args["cmd"](args, argi)
+    except KeyboardInterrupt:
+        exit(-1)
+
+    lg.info("Finished.")
 
 if __name__ == "__main__":
     main()
