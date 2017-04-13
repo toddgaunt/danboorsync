@@ -10,8 +10,10 @@ from urllib.request import urlopen
 from imgfetch import log
 from imgfetch import util
 
+danbooru_posts_url = "http://hijiribe.donmai.us/posts"
+
 def usage():
-	sys.stderr.write("usage: imgfetch-danbooru [-h] [-p <pages>] URL\n")
+	sys.stderr.write("usage: imgfetch-danbooru [-h] [-p <pages>] TAGS...\n")
 	quit()
 
 class image_post():
@@ -105,35 +107,36 @@ def cmd(args, argi):
 	# Default args
 	args["danbooru"] = {}
 	args["danbooru"]['p'] = [1]
-	args["danbooru"]['url'] = None
+	args["danbooru"]['tags'] = []
 
 	# Parse args
 	while (argi < len(sys.argv)):
 		if ('-' == sys.argv[argi][0]):
-			if ('p' == sys.argv[argi][1]):
+			if ('h' == sys.argv[argi][1]):
+				usage()
+			elif ('p' == sys.argv[argi][1]):
 				argi += 1
 				args["danbooru"]['p'] = string_range_parse(sys.argv[argi])
 			else:
 				usage()
 		else:
-			if (None == args["danbooru"]["url"]):
-				args["danbooru"]["url"] = urlparse(sys.argv[argi])
-			else:
-				usage()
+			args["danbooru"]["tags"].append(sys.argv[argi])
 
 		argi += 1
 
-	if (None == args["danbooru"]["url"]):
+	if ([] == args["danbooru"]["tags"]):
 		usage()
 
 	# Calculate all md5sums in target download directory recursively.
 	md5sums = util.find_hash('.', hashlib.md5)
 
 	for i in args["danbooru"]['p']:
-		url = args["danbooru"]["url"]
+		url = urlparse(danbooru_posts_url)
 		# Append the page number to the query list.
-		url._replace(query = url.query + "&page=" + str(i))
+		url = url._replace(query = "{}&tags={}&page={}".format(
+			url.query, '+'.join(args["danbooru"]["tags"]), str(i)))
 		# Download the json file into a list
+		print(url)
 		json = download_json_post(url)
 		if ([] == json):
 			lg.fatal("Could not download json from url {}".format(

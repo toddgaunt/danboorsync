@@ -7,7 +7,7 @@ setup(
     url = 'https://www.github.com/toddgaunt/imgfetch',
     download_url = 'https://www.github.com/toddgaunt/imgfetch',
     author_email = 'toddgaunt@protonmail.ch',
-    version = '1.1',
+    version = '2.0.0',
 
     packages = ['imgfetch'],
 
