@@ -13,7 +13,7 @@ from imgfetch import util
 danbooru_posts_url = "http://hijiribe.donmai.us/posts"
 
 def usage():
-	sys.stderr.write("usage: imgfetch-danbooru [-h] [-p <pages>] TAGS...\n")
+	sys.stderr.write("usage: imgfetch-danbooru [-h] [-p <pages>] [-e <extensions>] TAGS...\n")
 	quit()
 
 class image_post():
@@ -107,7 +107,8 @@ def cmd(args, argi):
 	# Default args
 	args["danbooru"] = {}
 	args["danbooru"]['p'] = [1]
-	args["danbooru"]['tags'] = []
+	args["danbooru"]["e"] = []
+	args["danbooru"]["tags"] = []
 
 	# Parse args
 	while (argi < len(sys.argv)):
@@ -116,7 +117,18 @@ def cmd(args, argi):
 				usage()
 			elif ('p' == sys.argv[argi][1]):
 				argi += 1
-				args["danbooru"]['p'] = string_range_parse(sys.argv[argi])
+				try:
+					args["danbooru"]['p'] = string_range_parse(sys.argv[argi])
+				except IndexError:
+					lg.error("No range given for -p switch.")
+					usage()
+			elif ('e' == sys.argv[argi][1]):
+				argi += 1
+				try:
+					args["danbooru"]['e'] = sys.argv[argi].split(',')
+				except IndexError:
+					lg.error("No extensions given for -e switch.")
+					usage()
 			else:
 				usage()
 		else:
@@ -131,18 +143,17 @@ def cmd(args, argi):
 	md5sums = util.find_hash('.', hashlib.md5)
 
 	for i in args["danbooru"]['p']:
+		# Attach the queries to the url.
 		url = urlparse(danbooru_posts_url)
-		# Append the page number to the query list.
 		url = url._replace(query = "{}&tags={}&page={}".format(
 			url.query, '+'.join(args["danbooru"]["tags"]), str(i)))
-		# Download the json file into a list
-		print(url)
+
 		json = download_json_post(url)
 		if ([] == json):
 			lg.fatal("Could not download json from url {}".format(
 				urlparse.unparse(url)))
 
-			# Transform the json list into a list of post objects
+		# Transform the json list into a list of post objects
 		posts = [];
 		for item in json:
 			# Load all the keys from the json dictionary
@@ -154,7 +165,7 @@ def cmd(args, argi):
 			# Construct a new post derived from the json file data
 			posts.append(image_post(item))
 
-		# Maybe truncate the output
+		# Maybe truncate the output.
 		if (args['v'] == 0):
 			trunc = 0
 		elif (args['v'] == 1):
@@ -165,6 +176,11 @@ def cmd(args, argi):
 			trunc = -1
 
 		for post in posts:
+			# Check to see if the post is a desired file extension.
+			if (([] != args["danbooru"]['e'])
+					and (not post.file_ext in args["danbooru"]['e'])):
+				continue
+
 			filepath = gen_dirname(post.tag_string_character)
 
 			try:
@@ -195,4 +211,4 @@ def cmd(args, argi):
 					lg.info("<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format(
 						filepath[0:(trunc-8)//2],
 						md5sums[post.md5sum][0:(trunc-8)//2]))
-	return 0
+					return 0

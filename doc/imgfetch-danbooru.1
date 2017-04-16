@@ -17,11 +17,16 @@ If no tags are provided, the program will exit with -1.
 Show a help message and exit
 .TP
 .B \-p <range>
-Specify a page range to download from, e.g. "imgfetch -p 1-5,10,15-20". By
-default, only the first page is downloaded.
+Specify a list of comma-seperated numerical ranges to download from, e.g.
+"imgfetch -p 1-5,10,15-20". By default, only the first page is downloaded.
+.B \-e <extensions>
+Specify a list of comma-seperated file extensions. Only extensions specified
+will be downloaded. By default, all file extensions are downloaded.
 
 .SH BUGS
-Please report bugs by emailing me at toddgaunt@protonmail.ch, or fix them yourself and make a pull request to https://www.github.com/toddgaunt/imgfetch if you've got nothing better to do.
+Please report bugs by emailing me at toddgaunt@protonmail.ch, or fix them
+yourself and make a pull request to https://www.github.com/toddgaunt/imgfetch
+if you've got nothing better to do.
 
 .SH AUTHOR
 This man page and imgfetch itself were originally authored by Todd Gaunt.
