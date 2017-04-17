@@ -4,7 +4,7 @@ import re
 import os
 import hashlib
 import json
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, urlunparse
 from urllib.request import urlopen
 
 from imgfetch import log
@@ -101,40 +101,36 @@ def string_range_parse(numbers):
 	return pages
 
 # Driver of danbooru
-def cmd(args, argi):
+def cmd(args, argv):
 	lg = log.logger("imgfetch-danbooru", args['v'])
 
 	# Default args
 	args["danbooru"] = {}
 	args["danbooru"]['p'] = [1]
-	args["danbooru"]["e"] = []
+	args["danbooru"]['e'] = []
 	args["danbooru"]["tags"] = []
 
 	# Parse args
-	while (argi < len(sys.argv)):
-		if ('-' == sys.argv[argi][0]):
-			if ('h' == sys.argv[argi][1]):
-				usage()
-			elif ('p' == sys.argv[argi][1]):
-				argi += 1
-				try:
-					args["danbooru"]['p'] = string_range_parse(sys.argv[argi])
-				except IndexError:
-					lg.error("No range given for -p switch.")
+	i = 0
+	while (i < len(argv)):
+		if ('-' == argv[i][0]):
+			try:
+				if ('h' == argv[i][1]):
 					usage()
-			elif ('e' == sys.argv[argi][1]):
-				argi += 1
-				try:
-					args["danbooru"]['e'] = sys.argv[argi].split(',')
-				except IndexError:
-					lg.error("No extensions given for -e switch.")
+				elif ('p' == argv[i][1]):
+					i += 1
+					args["danbooru"]['p'] = string_range_parse(argv[i])
+				elif ('e' == argv[i][1]):
+					i += 1
+					args["danbooru"]['e'] = argv[i].split(',')
+				else:
 					usage()
-			else:
-				usage()
+			except IndexError:
+				lg.error("No switch argument was supplied.")
 		else:
-			args["danbooru"]["tags"].append(sys.argv[argi])
+			args["danbooru"]["tags"].append(argv[i])
 
-		argi += 1
+		i += 1
 
 	if ([] == args["danbooru"]["tags"]):
 		usage()
@@ -150,8 +146,8 @@ def cmd(args, argi):
 
 		json = download_json_post(url)
 		if ([] == json):
-			lg.fatal("Could not download json from url {}".format(
-				urlparse.unparse(url)))
+			lg.fatal("Could not download json from url \"{}\"".format(
+				urlunparse(url)))
 
 		# Transform the json list into a list of post objects
 		posts = [];
@@ -211,4 +207,3 @@ def cmd(args, argi):
 					lg.info("<\033[32mFILE MATCH\033[0m> \"{}\" -> \"{}\"".format(
 						filepath[0:(trunc-8)//2],
 						md5sums[post.md5sum][0:(trunc-8)//2]))
-					return 0

@@ -25,41 +25,41 @@ def main():
     args['cmd'] = None
 
     # Parse arguments
-    argi = 1
-    while (argi < len(sys.argv)):
-        if (('-' == sys.argv[argi][0]) and (2 == len(sys.argv[argi]))):
-            switch = sys.argv[argi][1]
+    i = 1
+    while (i < len(sys.argv)):
+        if (('-' == sys.argv[i][0]) and (2 == len(sys.argv[i]))):
+            switch = sys.argv[i][1]
             if ('h' == switch):
                 usage()
             elif ('v' == switch):
-                for c in sys.argv[argi][1:]:
+                for c in sys.argv[i][1:]:
                     if ('v' != c):
                         usage()
                     args['v'] += 1
             elif ('q' == switch):
-                for c in sys.argv[argi][1:]:
+                for c in sys.argv[i][1:]:
                     if ('q' != c):
                         usage()
                     args['v'] -= 1
             elif ('o' == switch):
-                argi += 1
+                i += 1
                 try:
-                    args['o'] = sys.argv[argi]
+                    args['o'] = sys.argv[i]
                 except IndexError:
                     lg.error("No path given for -o switch.")
                     usage()
             else:
-                lg.error("Invalid argument \"{}\".".format(sys.argv[argi]))
+                lg.error("Invalid argument \"{}\".".format(sys.argv[i]))
                 usage()
         else:
-            if ("danbooru" == sys.argv[argi].lower()):
-                argi += 1
+            if ("danbooru" == sys.argv[i].lower()):
+                i += 1
                 args["cmd"] = danbooru.cmd
                 break
             else:
-                lg.error("Invalid subcommand \"{}\"".format(sys.argv[argi]));
+                lg.error("Invalid subcommand \"{}\"".format(sys.argv[i]));
                 usage()
-        argi += 1
+        i += 1
 
     # A subcommand must be present
     if (None == args['cmd']):
@@ -77,7 +77,7 @@ def main():
     # Run whichever subcommand was run
     try:
         with util.cd(args['o']):
-            args["cmd"](args, argi)
+            args["cmd"](args, sys.argv[i:])
     except KeyboardInterrupt:
         exit(-1)
 
