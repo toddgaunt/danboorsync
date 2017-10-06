@@ -41,7 +41,7 @@ def gen_filename(post):
 	md5sum = str(post.md5sum)
 	extension = str(post.file_ext)
 
-	max_name_len = 255 - len(md5sum) - (len(extension) + 1)
+	max_name_len = 200 - len(md5sum) - (len(extension) + 1)
 
 	for character in post.tag_string_character.split():
 		next_tag = util.remove_non_posix_chars(character) + '-'
