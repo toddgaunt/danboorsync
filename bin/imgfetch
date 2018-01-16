@@ -21,7 +21,7 @@ def main():
     # Default arguments
     args['r'] = False
     args['o'] = '.'
-    args['v'] = 0
+    args['v'] = 1
     args['cmd'] = None
 
     # Parse arguments
