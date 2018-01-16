@@ -18,12 +18,11 @@ def usage():
 
 class image_post():
 	""" image_post.__init__
-	Creates and returns a new post object based on a dictionary from
-	a danbooru json file's data
-
+	Creates and returns a new post object based on a an entry from danbooru's
+    json API.
 
 	return:
-		post: a post object with all fields filled out according to the
+		image_post: a post object with all fields filled out according to the
 		json file data
 	"""
 	def __init__(self, item=None):

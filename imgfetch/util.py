@@ -52,8 +52,9 @@ def find_hash(path, hash_func):
     """
     return:
         dict[str, str]:
-            upon success, will return a dictionary with
-            the relation [chksum:filename]
+            upon success, recursively applies the hash function to each file
+            under `path` and returns a dictionary with the
+            relation [checksum:filename]
 
             upon failure, will return an empty dictionary
     """
