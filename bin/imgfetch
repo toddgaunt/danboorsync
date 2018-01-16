@@ -54,7 +54,7 @@ def main():
         else:
             if ("danbooru" == sys.argv[i].lower()):
                 i += 1
-                args["cmd"] = danbooru.cmd
+                args["cmd"] = danbooru.run
                 break
             else:
                 lg.error("Invalid subcommand \"{}\"".format(sys.argv[i]));
@@ -74,7 +74,7 @@ def main():
         except FileExistsError:
             lg.fatal("Could not create directory \"{}\".".format(args['o']))
 
-    # Run whichever subcommand was run
+    # Run whichever subcommand was chosen
     try:
         with util.cd(args['o']):
             args["cmd"](args, sys.argv[i:])

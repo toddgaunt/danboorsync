@@ -100,7 +100,7 @@ def string_range_parse(numbers):
 	return pages
 
 # Driver of danbooru
-def cmd(args, argv):
+def run(args, argv):
 	lg = log.logger("imgfetch-danbooru", args['v'])
 
 	# Default args
