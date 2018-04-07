@@ -4,6 +4,7 @@ import re
 import os
 import hashlib
 import json
+from urllib.request import Request
 from urllib.parse import urlparse, urlunparse
 from urllib.request import urlopen
 
@@ -192,7 +193,10 @@ def run(args, argv):
                     if ("http" != urlstring[0:4]):
                         urlstring = "http://{}/{}".format(\
                                 url.netloc, post.file_url)
-                    fp.write(urlopen(urlstring).read())
+                    print(urlstring)
+                    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}
+                    req = Request(urlstring, headers=hdr)
+                    fp.write(urlopen(req).read())
 
                     if (args['r']):
                         #TODO(todd): add robot output
